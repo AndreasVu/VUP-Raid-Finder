@@ -17,10 +17,6 @@
     await controller.start();
     store = new RaidCodeStore(controller);
     await store.populateRaidCodeLists();
-    console.log(store);
-
-    let availableRaids = await controller.getAvailableRaids();
-    console.log(availableRaids);
   });
 
   let open = false;
@@ -56,9 +52,7 @@
   {/each}
 </div>
 
-<style lang="scss" gloabl>
-  @use "./global.scss";
-
+<style lang="scss">
   .raids {
     display: flex;
     height: 100%;

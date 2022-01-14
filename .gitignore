@@ -424,3 +424,4 @@ _output
 /types
 
 *.Development.json
+*.env

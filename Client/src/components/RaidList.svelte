@@ -26,7 +26,6 @@
   onMount(async () => {
     console.log("Subscriber: ", subscriber);
     subscriber.subscribe((newRaidCodes) => {
-      console.log("new raid");
       raidCodes = newRaidCodes;
     });
   });
