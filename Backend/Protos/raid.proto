@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "Vu.RaidFinder.Backend.Protos";
+import "google/protobuf/timestamp.proto";
+
+package raid;
+
+
+service RaiderService {
+  rpc StartStream (stream StreamRequest) returns (stream RaidCode);
+}
+
+message StreamRequest {
+    enum MessageType {
+      UNKNOWN = 0;
+      SUBSCRIBE = 1;
+      UNSUBSCRIBE = 2;
+    }
+    MessageType message_type = 1;
+    int32 raid_id = 2;
+}
+
+message RaidCode {
+  int32 raid_id = 1;
+  string code = 2;
+  google.protobuf.Timestamp tweet_time = 3;
+}

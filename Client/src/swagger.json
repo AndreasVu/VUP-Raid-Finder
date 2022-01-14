@@ -1,0 +1,82 @@
+{
+  "x-generator": "NSwag v13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v12.0.0.0))",
+  "swagger": "2.0",
+  "info": {
+    "title": "VUP Raid finder",
+    "description": "Use this to get the protobuf file and the available raids for the gRPC service",
+    "version": "1.0.0"
+  },
+  "host": "localhost:7108",
+  "schemes": [
+    "https"
+  ],
+  "produces": [
+    "text/plain",
+    "application/json",
+    "text/json"
+  ],
+  "paths": {
+    "/v1/protobuf": {
+      "get": {
+        "tags": [
+          "Protobuf"
+        ],
+        "operationId": "Protobuf_GetAvailableRaids",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/v1/available-raids": {
+      "get": {
+        "tags": [
+          "Raids"
+        ],
+        "operationId": "Raids_GetAvailableRaids",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Raid"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Raid": {
+      "type": "object",
+      "required": [
+        "englishName",
+        "japaneseName",
+        "category",
+        "element"
+      ],
+      "properties": {
+        "englishName": {
+          "type": "string"
+        },
+        "japaneseName": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "element": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
