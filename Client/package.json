@@ -6,7 +6,10 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
+    "smui-theme-light": "smui-theme compile public/build/smui.css -i src/theme",
+    "smui-theme-dark": "smui-theme compile public/build/smui-dark.css -i src/theme/dark"
   },
   "devDependencies": {
     "@material/elevation": "^12.0.0",
@@ -41,7 +44,7 @@
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
     "rxjs": "^7.3.0",
-    "sass": "^1.37.5",
+    "sass": "~1.39.2",
     "smui-theme": "^4.2.0",
     "svelte": "^3.0.0",
     "svelte-check": "^2.3.0",
@@ -52,6 +55,7 @@
   "dependencies": {
     "@microsoft/signalr": "^6.0.1",
     "axios": "^0.24.0",
+    "rollup-plugin-postcss": "^4.0.2",
     "sirv-cli": "^1.0.0",
     "svelte-material-ui": "^4.2.0",
     "ts-proto": "^1.82.5",

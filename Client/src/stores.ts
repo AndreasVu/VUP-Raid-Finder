@@ -1,9 +1,9 @@
 import type { Writable } from "svelte/store";
 import type { RaidCode } from "./interfaces/RaidCode";
-import type { SignalRController } from "./services/signalRController";
+import { SignalRController } from "./services/signalRController";
 import { writable } from "svelte/store";
 import type { Raid } from "./interfaces/RaidCode";
-import { RaidsClient } from "./apiClients";
+import { RaidsKey } from "./constants/localStorageKeys";
 
 export class RaidCodeStore {
   private raidCodes = new Map<number, Writable<RaidCode[]>>();
@@ -40,7 +40,6 @@ export class RaidCodeStore {
   subscribeToRaid = async (raidId: number): Promise<Writable<RaidCode[]>> => {
     await this.signalRController.subscribeToRaid(raidId);
     var writer = this.raidCodes.get(raidId);
-    console.log("writer", writer == null, writer);
 
     return writer;
   };
@@ -50,14 +49,15 @@ export class RaidCodeStore {
 }
 
 export const getRaids = async (): Promise<Raid[]> => {
-  let localStorageValue = localStorage.getItem("raids");
+  let localStorageValue = localStorage.getItem(RaidsKey);
   if (localStorageValue) {
     return JSON.parse(localStorageValue);
   }
 
-  let client = new RaidsClient();
-  var result = await client.getAvailableRaids();
+  let controller = new SignalRController();
+  await controller.start();
+  let result = await controller.getAvailableRaids();
   localStorage.setItem("raids", JSON.stringify(result));
-
+  await controller.stop();
   return result;
 };

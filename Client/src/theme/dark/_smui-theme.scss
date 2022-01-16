@@ -1,0 +1,24 @@
+@use '@material/theme/color-palette';
+
+$background: #192027;
+
+@use '@material/theme/index' as theme with (
+  $primary: #b8dbd9,
+  $secondary: #1f2935,
+  $surface: #47515f,
+  $background: $background,
+  $error: #b00020
+);
+
+html,
+body {
+  background-color: $background;
+  color: if(theme.contrast-tone($background) == 'dark', #000, #fff);
+}
+
+a {
+  color: color-palette.$blue-500;
+}
+a:visited {
+  color: color-palette.$blue-800;
+}

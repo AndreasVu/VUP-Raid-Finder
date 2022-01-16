@@ -1,7 +1,6 @@
 <script lang="ts">
   import Card, {
     Content,
-    PrimaryAction,
     Media,
     MediaContent,
   } from "@smui/card";
@@ -12,7 +11,6 @@
   import IconButton from "@smui/icon-button";
   import type { Raid, RaidCode } from "../interfaces/RaidCode";
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
-  import { RaidCodeStore } from "../stores";
   import type { Writable } from "svelte/store";
   let selected: string;
   let idSnackbar;

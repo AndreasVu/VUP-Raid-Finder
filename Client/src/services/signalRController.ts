@@ -13,7 +13,7 @@ export class SignalRController {
 
   constructor() {
     this.connection = new HubConnectionBuilder()
-      .withUrl("http://vups.xyz:1234/raid-code-hub", {
+      .withUrl("http://localhost:5241/raid-code-hub", {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
       })
@@ -33,6 +33,10 @@ export class SignalRController {
       console.log(err);
       setTimeout(this.start, 5000);
     }
+  }
+
+  async stop() {
+    await this.connection.stop();
   }
 
   async subscribeToRaid(raidId: number) {
