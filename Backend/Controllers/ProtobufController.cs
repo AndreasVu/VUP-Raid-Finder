@@ -12,7 +12,7 @@ public class ProtobufController : ControllerBase
     [HttpGet]
     public ActionResult<string> GetAvailableRaids()
     {
-        var raids = Utils.GetProtobuf();
+        var raids = Utils.GetProtoFile();
 
         return Ok(raids);
     }

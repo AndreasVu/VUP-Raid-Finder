@@ -7,7 +7,7 @@ public static class Utils
 {
     public static string ExtractRaidCode(string text)
     {
-        return text.Split("\n").First().Split(":")[^2].Trim();
+        return text.Split(":").First().Split(" ")[^2].Trim();
     }
 
     public static IList<Raid> GetRaids()
@@ -17,7 +17,7 @@ public static class Utils
         return JsonConvert.DeserializeObject<IList<Raid>>(fileContent);
     }
 
-    public static string GetProtobuf()
+    public static string GetProtoFile()
     {
         return File.ReadAllText(Environment.CurrentDirectory + "/Protos/raid.proto");
     }
