@@ -13,7 +13,7 @@ export class SignalRController {
 
   constructor() {
     this.connection = new HubConnectionBuilder()
-      .withUrl("https://vups.xyz:1234/raid-code-hub", {
+      .withUrl("https://vups.xyz/raid-code-hub", {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
       })
