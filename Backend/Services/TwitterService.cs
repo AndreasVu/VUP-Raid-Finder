@@ -20,6 +20,7 @@ public class TwitterService : IHostedService
         _repository = repository;
         _logger = logger;
 
+        _logger.LogInformation("Initializing Twitter client");
         _stream = twitterClient.Streams.CreateFilteredStream();
         _raids = Utils.GetRaids();
         AddTracks(_raids);
@@ -29,6 +30,7 @@ public class TwitterService : IHostedService
     
     public void HandleCodes(object? sender, MatchedTweetReceivedEventArgs eventReceived)
     {
+        _logger.LogInformation("Received tweet {tweet}", eventReceived.Tweet.Text);
         try
         {
             var raidCode = ParseTweetToRaidCode(eventReceived.Tweet);
