@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
-WORKDIR /app
+
+ENV ASPNETCORE_URLS=http://+:5000
 
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
