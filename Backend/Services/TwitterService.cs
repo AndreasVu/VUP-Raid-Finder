@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Tweetinvi;
 using Tweetinvi.Events;
 using Tweetinvi.Models;
@@ -20,9 +21,9 @@ public class TwitterService : IHostedService
         _repository = repository;
         _logger = logger;
 
-        _logger.LogInformation("Initializing Twitter client");
         _stream = twitterClient.Streams.CreateFilteredStream();
         _raids = Utils.GetRaids();
+        _logger.LogInformation("raids: {raids}", JsonConvert.SerializeObject(_raids));
         AddTracks(_raids);
 
         _stream.MatchingTweetReceived += HandleCodes;
