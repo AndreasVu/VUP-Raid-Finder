@@ -8,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 builder.Services.AddLogging();
 
-//builder.Services.AddMvc();
-//builder.Services.AddControllers();
+builder.Services.AddMvc();
+builder.Services.AddControllers();
 builder.Services.AddSwaggerDocument(config =>
 {
     config.PostProcess = document =>
@@ -37,10 +37,10 @@ app.UseRouting();
 // app.MapGrpcService<RaiderService>();
 
 // Swagger
-//app.UseOpenApi();
-//app.UseSwaggerUi3();
+app.UseOpenApi();
+app.UseSwaggerUi3();
 
-//app.MapControllers();
+app.MapControllers();
 app.MapHub<RaidCodeHub>("/raid-code-hub");
 
 app.Run();
