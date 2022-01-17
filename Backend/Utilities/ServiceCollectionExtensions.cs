@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RaidCodeProvider>();
 
         var twitterSettings = config.GetSection(TwitterSettings.FieldName).Get<TwitterSettings>();
-        if (twitterSettings is null)
+        if (!twitterSettings.HasValues())
             throw new ArgumentNullException(nameof(twitterSettings));
 
         services.AddSingleton<ITwitterClient>(_ => new TwitterClient(twitterSettings.ConsumerKey, twitterSettings.ConsumerSecret, twitterSettings.AccessToken, twitterSettings.AccessTokenSecret));
@@ -21,5 +21,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ConnectionList>();
 
         return services;
+    }
+
+    private static bool HasValues(this TwitterSettings settings)
+    {
+        return !string.IsNullOrWhiteSpace(settings.ConsumerKey) &&
+               !string.IsNullOrWhiteSpace(settings.ConsumerSecret) &&
+               !string.IsNullOrWhiteSpace(settings.AccessToken) &&
+               !string.IsNullOrWhiteSpace(settings.AccessTokenSecret);
     }
 }
