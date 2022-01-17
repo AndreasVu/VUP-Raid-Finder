@@ -3,9 +3,9 @@ import { onDestroy, onMount } from "svelte";
 
   import type { RaidCode } from "../interfaces/RaidCode";
 
-  export let raid: RaidCode;
+  export let raidCode: RaidCode;
   let timerId;
-  let tweetTime = new Date(raid.tweetedAt);
+  let tweetTime = new Date(raidCode.tweetedAt);
   let timeElapsed: number;
 
 
@@ -28,7 +28,7 @@ import { onDestroy, onMount } from "svelte";
 
 <div class="container">
   <div class="mdc-typography--headline6">
-    {raid.code}
+    {raidCode.code}
   </div>
 
   <div class="mdc-typography--subtitle1">{timeElapsed}s</div>

@@ -6,12 +6,15 @@
   import { RaidCodeStore } from "./stores";
   import { onDestroy, onMount } from "svelte/internal";
   import { SignalRController } from "./services/signalRController";
-  import type { Raid } from "./interfaces/RaidCode";
+  import type { Raid, RaidCode } from "./interfaces/RaidCode";
 import { SelectedRaidsKey } from "./constants/localStorageKeys";
+import type { Writable } from "svelte/store";
 
   let controller: SignalRController;
   let raidList: Raid[] = new Array<Raid>();
+  let subscriberDict: { [key: string]: Writable<RaidCode[]> } = {};
   let store: RaidCodeStore;
+  let open = false;
 
   const addRaidToLocalStorage = (raid: Raid) => {
     const raids: Raid[] = JSON.parse(localStorage.getItem(SelectedRaidsKey) || "[]");
@@ -44,9 +47,15 @@ import { SelectedRaidsKey } from "./constants/localStorageKeys";
     await controller.stop();
   });
 
-  let open = false;
+  const getSubscriber = async (raidId: number) => {
+    if (!subscriberDict[raidId]) {
+      subscriberDict[raidId] = await store.subscribeToRaid(raidId);
+    }
 
-  const handleNewRaid = (event: any) => {
+    return subscriberDict[raidId];
+  };
+
+  const handleNewRaid = async (event: any) => {
     let raid = event.detail.raid as Raid;
     if (raidList.find(r => r.id === raid.id) === undefined)
     {
@@ -59,6 +68,7 @@ import { SelectedRaidsKey } from "./constants/localStorageKeys";
     await store.unsubscribeToRaid(raid.id);
     raidList = raidList.filter((r) => r.englishName !== raid.englishName);
     removeRaidToLocalStorage(raid);
+    delete subscriberDict[raid.id];
   };
 </script>
 
@@ -82,7 +92,7 @@ import { SelectedRaidsKey } from "./constants/localStorageKeys";
 <AppBar />
 <div id="wrapper">
   {#each raidList as raid}
-    {#await store.subscribeToRaid(raid.id) then subscriber}
+    {#await getSubscriber(raid.id) then subscriber}
       <RaidList
         {subscriber}
         {raid}
@@ -90,7 +100,7 @@ import { SelectedRaidsKey } from "./constants/localStorageKeys";
           await handleRemovedRaid(raid);
         }}
       />
-    {/await}
+  {/await}
   {/each}
 </div>
 

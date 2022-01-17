@@ -12,26 +12,43 @@
   import type { Raid, RaidCode } from "../interfaces/RaidCode";
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
   import type { Writable } from "svelte/store";
+
   let selected: string;
   let idSnackbar;
   let raidCodes = new Array<RaidCode>();
-
   let dispatch = createEventDispatcher();
+  let timeout: NodeJS.Timeout;
 
   export let subscriber: Writable<RaidCode[]>;
   export let raid: Raid;
 
   onMount(async () => {
-    console.log("Subscriber: ", subscriber);
     subscriber.subscribe((newRaidCodes) => {
       raidCodes = newRaidCodes;
     });
   });
 
-  const handleClick = () => {
-    selected = raidCodes.at(0).code;
+
+  const copyLatestCode = () => {
+    const raidCode = raidCodes.find(r => !r.isUsed);
+    raidCode.isUsed = true;
+    navigator.clipboard.writeText(raidCode.code);
+    selected = raidCode.code;
+    showSnakcbar();
+  }
+
+  const copyCode = (raidCode: RaidCode) => {
+    raidCode.isUsed = true;
+    navigator.clipboard.writeText(raidCode.code);
+    selected = raidCode.code;
+    showSnakcbar();
+  }
+
+  const showSnakcbar = () => {
+    clearTimeout(timeout);
+    idSnackbar.close();
     idSnackbar.open();
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       idSnackbar.close();
     }, 1500);
   };
@@ -54,8 +71,8 @@
   <Content class="column">
     <List>
       {#each raidCodes as raidCode}
-        <Item class="padding" on:click={handleClick}>
-          <RaidEntry raid={raidCode} />
+        <Item class="padding" on:click={() => copyCode(raidCode)}>
+          <RaidEntry {raidCode} />
         </Item>
         <Separator />
       {/each}
@@ -65,7 +82,7 @@
     <div
       class="mdc-typography--headline5 copy mdc-elevation--z1"
       use:Ripple={{ surface: true, color: "primary" }}
-      on:click={handleClick}
+      on:click={copyLatestCode}
     >
       COPY LATEST
     </div>
