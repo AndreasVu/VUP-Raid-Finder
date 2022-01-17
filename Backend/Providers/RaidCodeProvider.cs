@@ -9,11 +9,16 @@ public class RaidCodeProvider
 {
     private readonly ConnectionList _connectionList;
     private readonly IHubContext<RaidCodeHub, IRaidCodeClient> _hubContext;
+    private readonly ILogger<RaidCodeProvider> _logger;
 
-    public RaidCodeProvider(ConnectionList connectionList, IHubContext<RaidCodeHub, IRaidCodeClient> hubContext)
+    public RaidCodeProvider(
+        ConnectionList connectionList,
+        IHubContext<RaidCodeHub, IRaidCodeClient> hubContext,
+        ILogger<RaidCodeProvider> logger)
     {
         _connectionList = connectionList;
         _hubContext = hubContext;
+        _logger = logger;
     }
 
     public void AddRaidCode(RaidCode newCode)
@@ -22,6 +27,7 @@ public class RaidCodeProvider
         {
             if (raids.Any(c => c.Id == newCode.RaidId))
             {
+                _logger.LogInformation("Sending raid code {code} to {connectionId}", newCode.Code, connectionId);
                 _hubContext.Clients.Client(connectionId).ReceiveRaidCode(newCode);
             }
         }
