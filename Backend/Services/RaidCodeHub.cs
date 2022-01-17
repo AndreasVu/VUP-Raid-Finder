@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using Microsoft.AspNetCore.SignalR;
 using Vu.RaidFinder.Backend.Interfaces;
 using Vu.RaidFinder.Backend.Models;
@@ -10,13 +9,11 @@ public class RaidCodeHub : Hub<IRaidCodeClient>
 {
     private readonly IDictionary<string, IList<Raid>> _raidFilterDict;
     private readonly IList<Raid> _raids;
-    private readonly Channel<RaidCode> _channel;
 
     public RaidCodeHub(ConnectionList connectionList)
     {
         _raidFilterDict = connectionList.ConnectionIds;
         _raids = Utils.GetRaids();
-        _channel = Channel.CreateUnbounded<RaidCode>();
     }
 
     public void Subscribe(int id)
