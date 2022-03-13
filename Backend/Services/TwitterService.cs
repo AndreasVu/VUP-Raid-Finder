@@ -80,9 +80,21 @@ public class TwitterService : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {service}", nameof(TwitterService));
+
+        var timer = new System.Timers.Timer();
+        timer.Interval = 1800000;
+        timer.Elapsed += RestartStream;
+
         _stream.StartMatchingAnyConditionAsync();
 
+        timer.Enabled = true;
         return Task.CompletedTask;
+    }
+
+    private void RestartStream(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        _stream.Stop();
+        _stream.StartMatchingAnyConditionAsync();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
