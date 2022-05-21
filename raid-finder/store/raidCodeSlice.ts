@@ -29,7 +29,6 @@ const signalRSlice = createSlice({
   reducers: {
     start(state) {
       state.controller.start();
-      state.controller.onNewRaid = handleNewRaids(state.raids);
     },
     subscribe(state, action: PayloadAction<Raid>) {
       state.controller.subscribeToRaid(action.payload.id);
@@ -42,11 +41,17 @@ const signalRSlice = createSlice({
     setAvailableraids(state, action: PayloadAction<Raid[]>) {
       state.availableRaids = action.payload;
     },
-    setOnNewRaid(
-      state,
-      action: PayloadAction<(raidCode: RaidCodeFromApi) => void>
-    ) {
-      state.controller.onNewRaid = action.payload;
+    raidCodeAdded(state, action: PayloadAction<RaidCodeFromApi>) {
+      let list = state.raids[action.payload.raidId];
+      if (list === undefined) list = [];
+
+      list.push({
+        code: action.payload.code,
+        isUsed: false,
+        tweetedAt: action.payload.tweetTime,
+      });
+
+      state.raids[action.payload.raidId] = list;
     },
   },
 });
@@ -81,7 +86,7 @@ export const {
   subscribe,
   unsubscribe,
   setAvailableraids,
-  setOnNewRaid,
+  raidCodeAdded,
 } = signalRSlice.actions;
 
 export default signalRSlice;

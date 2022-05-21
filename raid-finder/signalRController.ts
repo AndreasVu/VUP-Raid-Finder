@@ -7,10 +7,11 @@ import {
 } from "@microsoft/signalr";
 import { ReceiveRaidCode } from "./constants/signalRMethods";
 import { RaidsKey } from "./constants/localStorageKeys";
+import { store } from "./store/store";
+import { raidCodeAdded } from "./store/raidCodeSlice";
 
 export class SignalRController {
   private connection: HubConnection;
-  onNewRaid: ((raid: RaidCodeFromApi) => void) | undefined;
 
   constructor() {
     this.connection = new HubConnectionBuilder()
@@ -22,7 +23,7 @@ export class SignalRController {
       .build();
 
     this.connection.on(ReceiveRaidCode, (raid) => {
-      if (this.onNewRaid !== undefined) this.onNewRaid(raid);
+      store.dispatch(raidCodeAdded(raid));
     });
   }
 
