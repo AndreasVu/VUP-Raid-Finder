@@ -5,7 +5,7 @@ $background: #fff;
 @use '@material/theme/index' as theme with (
   $primary: color-palette.$purple-500,
   $secondary: color-palette.$teal-600,
-  $surface: #fff,
+  $surface: #ddd,
   $background: $background,
   $error: #b00020
 );

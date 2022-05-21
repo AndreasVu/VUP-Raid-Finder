@@ -4,9 +4,9 @@ $background: #192027;
 
 @use '@material/theme/index' as theme with (
   $primary: #b8dbd9,
-  $secondary: #1f2935,
-  $surface: #47515f,
-  $background: $background,
+  $secondary: #47515f,
+  $surface: #1f2935,
+  $background: #192027,
   $error: #b00020
 );
 

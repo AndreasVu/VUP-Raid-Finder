@@ -73,3 +73,20 @@ b,
 strong {
   font-weight: bold;
 }
+
+:root {
+  --primary: #9c27b0;
+  --secondary: #00897B;
+  --surface: #fff;
+  --background: #fff;
+  --error: #b00020;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+    --primary: #b8dbd9;
+    --secondary: #47515f;
+    --surface: #1f2935;
+    --background: #192027;
+    --error: #b00020;
+  } 
+}

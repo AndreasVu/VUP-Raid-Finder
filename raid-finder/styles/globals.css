@@ -1,0 +1,14 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.NoScroll {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+}
+
+.NoScroll::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
