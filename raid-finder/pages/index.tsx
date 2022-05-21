@@ -3,20 +3,21 @@ import {
   ThemeProvider,
   createTheme,
   PaletteMode,
-  Box,
   CssBaseline,
 } from "@mui/material";
 import type { NextPage } from "next";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Raid } from "../models/raid-model";
 import RaidList from "../components/raid-list";
 import { SnackbarProvider } from "notistack";
 import TopBar from "../components/top-bar";
+import { useDispatch, useSelector } from "react-redux";
+import { subscribe } from "../store/raidCodeSlice";
+import { RootState } from "../store/store";
 
 export const ColorModeContext = React.createContext({
   toggleColorMode: () => {},
 });
-// export const SignalRContext = React.createContext(new SignalRController());
 
 const Home: NextPage = () => {
   const getDesignTokens = (mode: PaletteMode) => ({
@@ -25,8 +26,8 @@ const Home: NextPage = () => {
     },
   });
 
-  const [mode, setMode] = React.useState<PaletteMode>("dark");
-  const colorMode = React.useMemo(
+  const [mode, setMode] = useState<PaletteMode>("dark");
+  const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
         setMode((prev) => (prev === "light" ? "dark" : "light"));
@@ -36,55 +37,43 @@ const Home: NextPage = () => {
   );
   const theme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const selectedRaids = useSelector(
+    (state: RootState) => state.signalR.subscribedRaids
+  );
+  const dispatch = useDispatch();
 
-  const raids: Raid[] = [
-    {
-      englishName: "Luci",
-      category: "Impossible",
-      element: "None",
-      id: 1,
-      japaneseName: "test",
-    },
-    {
-      englishName: "Bahamut",
-      category: "Impossible",
-      element: "None",
-      id: 1,
-      japaneseName: "test",
-    },
-  ];
-
-  const HandleOnCloseDialog = (raidName: string) => {
-    setOpenDialog(false);
-    console.log(raidName);
+  const handleSelectedRaid = (raid: Raid) => {
+    if (selectedRaids.find((r) => r.id === raid.id) === undefined) {
+      dispatch(subscribe(raid));
+    }
   };
 
   return (
     <SnackbarProvider maxSnack={3}>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-          <CssBaseline>
-            <TopBar />
-            <Box
-              sx={{ height: "100vh", display: "flex", flexDirection: "column" }}
-            >
-              <Stack
-                direction="row"
-                gap={2}
+          <CssBaseline />
+          <TopBar onRaidSelected={handleSelectedRaid} />
+          <Stack
+            direction="row"
+            gap={2}
+            sx={{
+              padding: 2,
+              overflowX: "auto",
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            {selectedRaids.map((raid) => (
+              <RaidList
+                key={raid.id}
+                raid={raid}
                 sx={{
-                  padding: 2,
-                  overflowX: "scroll",
-                  display: "flex",
-                  flexDirection: "row",
+                  flexShrink: 0,
                 }}
-              >
-                {raids.map((raid) => (
-                  <RaidList key={raid.id} raid={raid} />
-                ))}
-              </Stack>
-            </Box>
-          </CssBaseline>
+              />
+            ))}
+          </Stack>
         </ThemeProvider>
       </ColorModeContext.Provider>
     </SnackbarProvider>
