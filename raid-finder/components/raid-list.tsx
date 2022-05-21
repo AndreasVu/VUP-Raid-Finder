@@ -1,21 +1,26 @@
-import { Button, Divider, Paper, Stack, Typography } from "@mui/material";
-import { useState } from "react";
+import {
+  Button,
+  Divider,
+  Paper,
+  Stack,
+  Typography,
+  PaperProps,
+} from "@mui/material";
 import { Raid, RaidCode } from "../models/raid-model";
 import RaidListEntry from "./raid-list-entry";
 import { useSnackbar } from "notistack";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
-const RaidList = ({ raid }: { raid: Raid }) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [raidCodes, setRaidCodes] = useState([
-    { code: "1231245", isUsed: false, tweetedAt: "1234534" },
-    { code: "1231246", isUsed: false, tweetedAt: "12356544" },
-    { code: "1231247", isUsed: false, tweetedAt: "123rr4" },
-    { code: "1231248", isUsed: false, tweetedAt: "123c4" },
-    { code: "1231249", isUsed: false, tweetedAt: "123vv4" },
-    { code: "1231240", isUsed: false, tweetedAt: "123 4" },
-    { code: "1231241", isUsed: false, tweetedAt: "123hbb4" },
-    { code: "1231242", isUsed: false, tweetedAt: "1dwwv23bb4" },
-  ] as RaidCode[]);
+export interface RaidListProps extends PaperProps {
+  raid: Raid;
+}
+
+const RaidList = ({ raid, sx, ...props }: RaidListProps) => {
+  const { enqueueSnackbar } = useSnackbar();
+  const raidCodes = useSelector(
+    (state: RootState) => state.signalR.raids[raid.id]
+  );
 
   const copyAndShowSnackbar = (raidCode: string) => {
     navigator.clipboard.writeText(raidCode);
@@ -30,28 +35,11 @@ const RaidList = ({ raid }: { raid: Raid }) => {
 
     if (latest === undefined) return;
 
-    setRaidCodes((codes) => {
-      const oldCode = codes.find((c) => c === latest);
-
-      if (oldCode) oldCode.isUsed = true;
-
-      return codes;
-    });
-
     copyAndShowSnackbar(latest.code);
   };
 
   const handleClick = (raidCode: RaidCode) => {
-    setRaidCodes((codes) => {
-      const oldCode = codes.find((c) => c === raidCode);
-
-      if (oldCode === undefined) return codes;
-
-      oldCode.isUsed = true;
-      copyAndShowSnackbar(raidCode.code);
-
-      return codes;
-    });
+    copyAndShowSnackbar(raidCode.code);
   };
 
   return (
@@ -62,11 +50,13 @@ const RaidList = ({ raid }: { raid: Raid }) => {
         width: "20em",
         height: "100%",
         flexDirection: "row",
+        ...sx,
       }}
+      {...props}
     >
       <Stack gap={2} sx={{ display: "flex", height: "100%" }}>
         <Typography variant="h6" sx={{ alignSelf: "center" }}>
-          Lv 150 Lucilius
+          {raid.englishName}
         </Typography>
         <Divider variant="middle" />
         <Stack
@@ -74,13 +64,14 @@ const RaidList = ({ raid }: { raid: Raid }) => {
           sx={{ flexBasis: "100%", overflowY: "scroll", paddingX: 2 }}
           className="NoScroll"
         >
-          {raidCodes.map((code: RaidCode) => (
-            <RaidListEntry
-              key={code.tweetedAt}
-              raidCode={code}
-              onClick={() => handleClick(code)}
-            />
-          ))}
+          {raidCodes !== undefined &&
+            raidCodes.map((code: RaidCode) => (
+              <RaidListEntry
+                key={code.tweetedAt}
+                raidCode={code}
+                onClick={() => handleClick(code)}
+              />
+            ))}
         </Stack>
         <Button
           variant="contained"

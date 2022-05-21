@@ -13,14 +13,19 @@ import React, { useEffect, useState } from "react";
 import { Raid } from "../models/raid-model";
 import { getRaids } from "../signalRController";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 interface SimpleDialogProps {
   open: boolean;
-  onClose: (value: string) => void;
+  onClose: (raid: Raid) => void;
 }
 
-const RaidSelectDialog = (props: SimpleDialogProps) => {
+const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
   const [raids, setRaids] = useState<Map<string, Raid[]>>(new Map());
+  const allRaids = useSelector(
+    (state: RootState) => state.signalR.availableRaids
+  );
   const { enqueueSnackbar } = useSnackbar();
 
   const getBorderColor = (element: string) => {
@@ -41,25 +46,20 @@ const RaidSelectDialog = (props: SimpleDialogProps) => {
   };
 
   useEffect(() => {
-    getRaids()
-      .then((raids) => {
-        const categories = Array.from(new Set(raids.map((r) => r.category)));
-        setRaids(
-          new Map(
-            categories.map((c) => [c, raids.filter((r) => r.category === c)])
-          )
-        );
-        console.log(raids);
-      })
-      .catch((err) => {
-        console.error(err);
-        enqueueSnackbar("Error getting raids", { variant: "error" });
-      });
-  }, []);
+    const categories = Array.from(new Set(allRaids.map((r) => r.category)));
+    setRaids(
+      new Map(
+        categories.map((c) => [c, allRaids.filter((r) => r.category === c)])
+      )
+    );
+  }, [allRaids]);
 
-  const { onClose, open } = props;
+  const handleClicked = (raid: Raid) => {
+    onClose(raid);
+  };
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open}>
       <DialogTitle>Select Raid</DialogTitle>
       <DialogContent>
         {Array.from(raids).map(([category, raidArray]) => (
@@ -74,7 +74,7 @@ const RaidSelectDialog = (props: SimpleDialogProps) => {
             <AccordionDetails>
               {raidArray.map((r) => (
                 <Button
-                  key={r.englishName}
+                  key={r.id}
                   variant="contained"
                   sx={{
                     borderColor: getBorderColor(r.element),
@@ -82,6 +82,7 @@ const RaidSelectDialog = (props: SimpleDialogProps) => {
                     borderStyle: "solid",
                     borderWidth: 2,
                   }}
+                  onClick={() => handleClicked(r)}
                 >
                   {r.englishName}
                 </Button>

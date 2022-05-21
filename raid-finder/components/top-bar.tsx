@@ -11,19 +11,26 @@ import {
   Toolbar,
   PaletteMode,
   useTheme,
+  Hidden,
+  Box,
 } from "@mui/material";
 import React from "react";
 import { ColorModeContext } from "../pages/index";
 import RaidSelectDialog from "./raid-select-dialog";
+import { Raid } from "../models/raid-model";
 
-const TopBar = () => {
+export interface TopBarParameters {
+  onRaidSelected: (raid: Raid) => void;
+}
+
+const TopBar = ({ onRaidSelected }: TopBarParameters) => {
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   const [openDialog, setOpenDialog] = React.useState(false);
 
-  const HandleOnCloseDialog = (raidName: string) => {
+  const HandleOnCloseDialog = (raid: Raid) => {
     setOpenDialog(false);
-    console.log(raidName);
+    onRaidSelected(raid);
   };
 
   return (
@@ -31,38 +38,58 @@ const TopBar = () => {
       <AppBar position="static" color="inherit">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Typography variant="h6" component="div" sx={{ mr: 5 }}>
-              LOGO
-            </Typography>
-
-            <Stack direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-              <Button
-                color="primary"
-                variant="contained"
-                href="https://gbf.wiki/Main_Page"
-                target="_blank"
-              >
-                Wiki
-              </Button>
-
-              <Button color="primary" variant="contained">
-                Calculator
-              </Button>
-            </Stack>
-            <IconButton color="primary" onClick={() => setOpenDialog(true)}>
-              <AddCircleRounded fontSize="large" />
-            </IconButton>
-            <IconButton
-              sx={{ ml: 1 }}
-              onClick={colorMode.toggleColorMode}
-              color="inherit"
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
             >
-              {theme.palette.mode === "dark" ? (
-                <Brightness7Icon />
-              ) : (
-                <Brightness4Icon />
-              )}
-            </IconButton>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" component="div" sx={{ mr: 5 }}>
+                  LOGO
+                </Typography>
+
+                <Hidden smDown>
+                  <Stack direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      href="https://gbf.wiki/Main_Page"
+                      target="_blank"
+                    >
+                      Wiki
+                    </Button>
+
+                    <Button color="primary" variant="contained">
+                      Calculator
+                    </Button>
+                  </Stack>
+                </Hidden>
+              </Box>
+              <Box>
+                <IconButton color="primary" onClick={() => setOpenDialog(true)}>
+                  <AddCircleRounded fontSize="large" />
+                </IconButton>
+                <IconButton
+                  sx={{ ml: 1 }}
+                  onClick={colorMode.toggleColorMode}
+                  color="inherit"
+                >
+                  {theme.palette.mode === "dark" ? (
+                    <Brightness7Icon />
+                  ) : (
+                    <Brightness4Icon />
+                  )}
+                </IconButton>
+              </Box>
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
