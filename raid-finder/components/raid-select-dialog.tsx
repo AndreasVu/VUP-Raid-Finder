@@ -6,16 +6,23 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, {
+  ChangeEventHandler,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Raid } from "../models/raid-model";
 import { getRaids } from "../signalRController";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-
+import { Box } from "@mui/system";
+import debounce from "lodash.debounce";
 interface SimpleDialogProps {
   open: boolean;
   onClose: (raid: Raid | null) => void;
@@ -26,6 +33,8 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
   const allRaids = useSelector(
     (state: RootState) => state.signalR.availableRaids
   );
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredRaids, setFilteredRaids] = useState<Raid[]>([]);
 
   const getBorderColor = (element: string) => {
     switch (element) {
@@ -46,8 +55,17 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
     }
   };
 
+  const sortOrder = [
+    "Impossible",
+    "6 Dragons",
+    "Ennead",
+    "Impossible Omega II",
+  ].reverse();
+
   useEffect(() => {
-    const categories = Array.from(new Set(allRaids.map((r) => r.category)));
+    const categories = Array.from(new Set(allRaids.map((r) => r.category)))
+      .sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b))
+      .reverse();
     setRaids(
       new Map(
         categories.map((c) => [c, allRaids.filter((r) => r.category === c)])
@@ -66,10 +84,56 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
     onClose(null);
   };
 
+  const handleValueChanged = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setSearchValue(event.target.value);
+
+    if (event.target.value == "") {
+      setFilteredRaids([]);
+    } else {
+      setFilteredRaids(
+        allRaids.filter(
+          (r) =>
+            r.englishName
+              .toLocaleLowerCase()
+              .includes(searchValue.toLocaleLowerCase()) ||
+            r.japaneseName
+              .toLocaleLowerCase()
+              .includes(searchValue.toLocaleLowerCase())
+        )
+      );
+    }
+  };
+
+  const borderColorStyle = (element: string) => ({
+    borderColor: getBorderColor(element),
+    margin: 0.5,
+    borderStyle: "solid",
+    borderWidth: 2,
+  });
+
   return (
     <Dialog open={open} onClose={handleClosed}>
       <DialogTitle>Select Raid</DialogTitle>
       <DialogContent>
+        <TextField
+          id="raidSearch"
+          label="ex: Bennu"
+          variant="standard"
+          value={searchValue}
+          onChange={handleValueChanged}
+          sx={{ width: "100%", marginTop: "2rem", marginBottom: "2rem" }}
+        />
+        {filteredRaids.length > 0 && (
+          <Box sx={{ paddingBottom: "1rem" }}>
+            {filteredRaids.map((r) => (
+              <Button key={r.id} sx={borderColorStyle(r.element)}>
+                {r.englishName}
+              </Button>
+            ))}
+          </Box>
+        )}
         {Array.from(raids).map(([category, raidArray]) => (
           <Accordion key={category}>
             <AccordionSummary
@@ -84,12 +148,7 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
                 <Button
                   key={r.id}
                   variant="contained"
-                  sx={{
-                    borderColor: getBorderColor(r.element),
-                    margin: 0.5,
-                    borderStyle: "solid",
-                    borderWidth: 2,
-                  }}
+                  sx={borderColorStyle(r.element)}
                   onClick={() => handleClicked(r)}
                 >
                   {r.englishName}
