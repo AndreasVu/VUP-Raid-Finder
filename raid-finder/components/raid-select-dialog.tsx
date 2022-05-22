@@ -41,6 +41,8 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
         return "purple";
       case "None":
         return "gray";
+      case "Earth":
+        return "brown";
     }
   };
 
