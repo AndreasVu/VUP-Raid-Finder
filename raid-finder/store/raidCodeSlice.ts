@@ -85,12 +85,12 @@ export const fetchRaids = createAsyncThunk(
 );
 
 const updateLocalStore = (raid: Raid, action: "add" | "remove") => {
-  const raids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
+  let raids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
 
   if (action == "add") {
     raids.push(raid);
   } else {
-    raids.filter((r) => r.id !== raid.id);
+    raids = raids.filter((r) => r.id !== raid.id);
   }
 
   localStorage.setItem(SelectedRaidsKey, JSON.stringify(raids));
