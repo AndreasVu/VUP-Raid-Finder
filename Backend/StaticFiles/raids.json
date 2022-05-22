@@ -572,5 +572,33 @@
     "category": "Impossible",
     "element": "None",
     "id": 82
+  },
+  {
+    "englishName": "Lvl 120 Bennu",
+    "japaneseName": "Lv120 ベンヌ",
+    "category": "Ennead",
+    "element": "Earth",
+    "id": 83
+  },
+  {
+    "englishName": "Lvl 120 Horus",
+    "japaneseName": "Lv120 ホルス",
+    "category": "Ennead",
+    "element": "Light",
+    "id": 84
+  },
+  {
+    "englishName": "Lvl 120 Osiris",
+    "japaneseName": "Lv120 オシリス",
+    "category": "Ennead",
+    "element": "Dark",
+    "id": 85
+  },
+  {
+    "englishName": "Lvl 300 Super Ultimate Bahamut",
+    "japaneseName": "Lv300 スーパーアルティメットバハムート",
+    "category": "Impossible",
+    "element": "None",
+    "id": 86
   }
 ]
