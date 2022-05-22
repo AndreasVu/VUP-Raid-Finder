@@ -5,13 +5,16 @@ import {
   Stack,
   Typography,
   PaperProps,
+  Box,
+  IconButton,
 } from "@mui/material";
 import { Raid, RaidCode } from "../models/raid-model";
 import RaidListEntry from "./raid-list-entry";
 import { useSnackbar } from "notistack";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-
+import { setIsUsed, unsubscribe } from "../store/raidCodeSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
 export interface RaidListProps extends PaperProps {
   raid: Raid;
 }
@@ -21,10 +24,11 @@ const RaidList = ({ raid, sx, ...props }: RaidListProps) => {
   const raidCodes = useSelector(
     (state: RootState) => state.signalR.raids[raid.id]
   );
+  const dispatch = useDispatch();
 
   const copyAndShowSnackbar = (raidCode: string) => {
     navigator.clipboard.writeText(raidCode);
-    enqueueSnackbar("Copied to clipboard", {
+    enqueueSnackbar(`Copied "${raidCode}" to clipboard`, {
       variant: "default",
       autoHideDuration: 1000,
     });
@@ -35,29 +39,46 @@ const RaidList = ({ raid, sx, ...props }: RaidListProps) => {
 
     if (latest === undefined) return;
 
+    dispatch(setIsUsed({ codeId: latest.id, raidId: raid.id }));
     copyAndShowSnackbar(latest.code);
   };
 
   const handleClick = (raidCode: RaidCode) => {
+    dispatch(setIsUsed({ codeId: raidCode.id, raidId: raid.id }));
     copyAndShowSnackbar(raidCode.code);
+  };
+
+  const onRemoved = () => {
+    dispatch(unsubscribe(raid));
   };
 
   return (
     <Paper
       elevation={1}
       sx={{
-        paddingTop: 2,
-        width: "20em",
-        height: "100%",
-        flexDirection: "row",
         ...sx,
       }}
       {...props}
     >
       <Stack gap={2} sx={{ display: "flex", height: "100%" }}>
-        <Typography variant="h6" sx={{ alignSelf: "center" }}>
-          {raid.englishName}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+          }}
+        >
+          <Typography variant="h6" sx={{ alignSelf: "center" }}>
+            {raid.englishName}
+          </Typography>
+          <IconButton onClick={onRemoved}>
+            <DeleteIcon
+              sx={{
+                alignSelf: "right",
+              }}
+            />
+          </IconButton>
+        </Box>
         <Divider variant="middle" />
         <Stack
           gap={1}
@@ -67,7 +88,7 @@ const RaidList = ({ raid, sx, ...props }: RaidListProps) => {
           {raidCodes !== undefined &&
             raidCodes.map((code: RaidCode) => (
               <RaidListEntry
-                key={code.tweetedAt}
+                key={code.id}
                 raidCode={code}
                 onClick={() => handleClick(code)}
               />

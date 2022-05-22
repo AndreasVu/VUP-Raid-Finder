@@ -1,13 +1,8 @@
-import {
-  AnyAction,
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-  ThunkAction,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Raid, RaidCode, RaidCodeFromApi } from "../models/raid-model";
 import { getRaids, SignalRController } from "../signalRController";
-import { RootState } from "./store";
+import { v4 as uuidv4 } from "uuid";
+import { SelectedRaidsKey } from "../constants/localStorageKeys";
 
 export interface SignalRState {
   controller: SignalRController;
@@ -33,45 +28,53 @@ const signalRSlice = createSlice({
     subscribe(state, action: PayloadAction<Raid>) {
       state.controller.subscribeToRaid(action.payload.id);
       state.subscribedRaids.push(action.payload);
+      updateLocalStore(action.payload, "add");
     },
     unsubscribe(state, action: PayloadAction<Raid>) {
       state.controller.unsubscribeToRaid(action.payload.id);
-      state.subscribedRaids.filter((r) => r.id !== action.payload.id);
+      state.subscribedRaids = state.subscribedRaids.filter(
+        (r) => r.id !== action.payload.id
+      );
+      updateLocalStore(action.payload, "remove");
     },
     setAvailableraids(state, action: PayloadAction<Raid[]>) {
       state.availableRaids = action.payload;
+    },
+    setIsUsed(
+      state,
+      action: PayloadAction<{ raidId: number; codeId: string }>
+    ) {
+      const newList = state.raids[action.payload.raidId].map((r) => {
+        if (r.id === action.payload.codeId) {
+          return { ...r, isUsed: true };
+        } else {
+          return r;
+        }
+      });
+
+      state.raids[action.payload.raidId] = newList;
     },
     raidCodeAdded(state, action: PayloadAction<RaidCodeFromApi>) {
       let list = state.raids[action.payload.raidId];
       if (list === undefined) list = [];
 
-      list.push({
+      list.unshift({
+        id: uuidv4(),
         code: action.payload.code,
         isUsed: false,
-        tweetedAt: action.payload.tweetTime,
+        tweetedAt: new Date(action.payload.tweetTime),
       });
 
       state.raids[action.payload.raidId] = list;
     },
+    populateSelectedRaids(state) {
+      state.subscribedRaids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
+      for (const raid of state.subscribedRaids) {
+        state.controller.subscribeToRaid(raid.id);
+      }
+    },
   },
 });
-
-const handleNewRaids: (
-  raidCodes: Record<number, RaidCode[]>
-) => (raidCode: RaidCodeFromApi) => void = (
-  raidCodes: Record<number, RaidCode[]>
-) => {
-  return (raidCode: RaidCodeFromApi) => {
-    let raidCodeList = raidCodes[raidCode.raidId];
-    if (raidCodeList === undefined) raidCodeList = [];
-
-    raidCodeList.unshift({
-      code: raidCode.code,
-      isUsed: false,
-      tweetedAt: raidCode.tweetTime,
-    });
-  };
-};
 
 export const fetchRaids = createAsyncThunk(
   "signalR/fetchRaids",
@@ -81,12 +84,34 @@ export const fetchRaids = createAsyncThunk(
   }
 );
 
+const updateLocalStore = (raid: Raid, action: "add" | "remove") => {
+  const raids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
+
+  if (action == "add") {
+    raids.push(raid);
+  } else {
+    raids.filter((r) => r.id !== raid.id);
+  }
+
+  localStorage.setItem(SelectedRaidsKey, JSON.stringify(raids));
+};
+
+const getLocalstorage = <T>(key: string) => {
+  const content = localStorage.getItem(key);
+
+  if (content === null) return null;
+
+  return JSON.parse(content) as T;
+};
+
 export const {
   start,
   subscribe,
   unsubscribe,
   setAvailableraids,
   raidCodeAdded,
+  setIsUsed,
+  populateSelectedRaids,
 } = signalRSlice.actions;
 
 export default signalRSlice;

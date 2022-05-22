@@ -1,6 +1,7 @@
 export interface RaidCode {
+  id: string;
   code: string;
-  tweetedAt: string;
+  tweetedAt: Date;
   isUsed: boolean;
 }
 

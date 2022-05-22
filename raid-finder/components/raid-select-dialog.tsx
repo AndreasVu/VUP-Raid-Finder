@@ -26,7 +26,6 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
   const allRaids = useSelector(
     (state: RootState) => state.signalR.availableRaids
   );
-  const { enqueueSnackbar } = useSnackbar();
 
   const getBorderColor = (element: string) => {
     switch (element) {
@@ -59,7 +58,7 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
   };
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={() => (open = false)}>
       <DialogTitle>Select Raid</DialogTitle>
       <DialogContent>
         {Array.from(raids).map(([category, raidArray]) => (

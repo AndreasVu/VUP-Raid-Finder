@@ -1,5 +1,5 @@
 import { Box, Paper, Typography, ButtonBase } from "@mui/material";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RaidCode } from "../models/raid-model";
 
 type RaidListEntryProps = {
@@ -8,6 +8,19 @@ type RaidListEntryProps = {
 };
 
 const RaidListEntry = ({ raidCode, onClick }: RaidListEntryProps) => {
+  const getSecondsSince = (date: Date) => {
+    return Math.floor((new Date().getTime() - date.getTime()) * 0.001);
+  };
+  const [tweetedSince, setTweetedSince] = useState(
+    getSecondsSince(raidCode.tweetedAt)
+  );
+
+  useEffect(() => {
+    setInterval(() => {
+      setTweetedSince(getSecondsSince(raidCode.tweetedAt));
+    }, 1000);
+  });
+
   return (
     <ButtonBase onClick={onClick}>
       <Paper
@@ -29,7 +42,7 @@ const RaidListEntry = ({ raidCode, onClick }: RaidListEntryProps) => {
           }}
         >
           <Typography variant="h6">{raidCode.code}</Typography>
-          <Typography variant="subtitle1">{raidCode.tweetedAt}</Typography>
+          <Typography variant="subtitle1">{tweetedSince}s</Typography>
         </Box>
       </Paper>
     </ButtonBase>
