@@ -18,7 +18,7 @@ import { RootState } from "../store/store";
 
 interface SimpleDialogProps {
   open: boolean;
-  onClose: (raid: Raid) => void;
+  onClose: (raid: Raid | null) => void;
 }
 
 const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
@@ -57,8 +57,15 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
     onClose(raid);
   };
 
+  const handleClosed = (
+    event: {},
+    reason: "backdropClick" | "escapeKeyDown"
+  ) => {
+    onClose(null);
+  };
+
   return (
-    <Dialog open={open} onClose={() => (open = false)}>
+    <Dialog open={open} onClose={handleClosed}>
       <DialogTitle>Select Raid</DialogTitle>
       <DialogContent>
         {Array.from(raids).map(([category, raidArray]) => (

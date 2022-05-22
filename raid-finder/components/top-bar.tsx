@@ -28,9 +28,9 @@ const TopBar = ({ onRaidSelected }: TopBarParameters) => {
   const theme = useTheme();
   const [openDialog, setOpenDialog] = React.useState(false);
 
-  const HandleOnCloseDialog = (raid: Raid) => {
+  const HandleOnCloseDialog = (raid: Raid | null) => {
     setOpenDialog(false);
-    onRaidSelected(raid);
+    if (raid !== null) onRaidSelected(raid);
   };
 
   return (
