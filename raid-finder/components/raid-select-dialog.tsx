@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Fade,
   TextField,
   Typography,
 } from "@mui/material";
@@ -23,6 +24,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { Box } from "@mui/system";
 import debounce from "lodash.debounce";
+import { CSSTransition } from "react-transition-group";
+
 interface SimpleDialogProps {
   open: boolean;
   onClose: (raid: Raid | null) => void;
@@ -35,6 +38,7 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
   );
   const [searchValue, setSearchValue] = useState("");
   const [filteredRaids, setFilteredRaids] = useState<Raid[]>([]);
+  const [showSearch, setShowSearch] = useState(false);
 
   const getBorderColor = (element: string) => {
     switch (element) {
@@ -84,26 +88,31 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
     onClose(null);
   };
 
+  const debouncedFilter = useCallback(
+    debounce((value: string) => {
+      if (value == "") {
+        setFilteredRaids([]);
+      } else {
+        setFilteredRaids(
+          allRaids.filter(
+            (r) =>
+              r.englishName
+                .toLocaleLowerCase()
+                .includes(value.toLocaleLowerCase()) ||
+              r.japaneseName
+                .toLocaleLowerCase()
+                .includes(value.toLocaleLowerCase())
+          )
+        );
+      }
+    }, 200),
+    []
+  );
   const handleValueChanged = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     setSearchValue(event.target.value);
-
-    if (event.target.value == "") {
-      setFilteredRaids([]);
-    } else {
-      setFilteredRaids(
-        allRaids.filter(
-          (r) =>
-            r.englishName
-              .toLocaleLowerCase()
-              .includes(searchValue.toLocaleLowerCase()) ||
-            r.japaneseName
-              .toLocaleLowerCase()
-              .includes(searchValue.toLocaleLowerCase())
-        )
-      );
-    }
+    debouncedFilter(event.target.value);
   };
 
   const borderColorStyle = (element: string) => ({
@@ -138,7 +147,18 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
         />
         {filteredRaids.length > 0 && (
           <Box sx={{ paddingBottom: "1rem" }}>
-            {filteredRaids.map((r) => raidButton(r))}
+            {filteredRaids.map((r) => (
+              <Fade in={filteredRaids.length > 0} key={r.id}>
+                <Button
+                  key={r.id}
+                  sx={borderColorStyle(r.element)}
+                  variant="contained"
+                  onClick={() => handleClicked(r)}
+                >
+                  {r.englishName}
+                </Button>
+              </Fade>
+            ))}
           </Box>
         )}
         {Array.from(raids).map(([category, raidArray]) => (
