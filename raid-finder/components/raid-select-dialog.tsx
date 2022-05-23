@@ -113,6 +113,17 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
     borderWidth: 2,
   });
 
+  const raidButton = (raid: Raid) => (
+    <Button
+      key={raid.id}
+      sx={borderColorStyle(raid.element)}
+      variant="contained"
+      onClick={() => handleClicked(raid)}
+    >
+      {raid.englishName}
+    </Button>
+  );
+
   return (
     <Dialog open={open} onClose={handleClosed}>
       <DialogTitle>Select Raid</DialogTitle>
@@ -127,11 +138,7 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
         />
         {filteredRaids.length > 0 && (
           <Box sx={{ paddingBottom: "1rem" }}>
-            {filteredRaids.map((r) => (
-              <Button key={r.id} sx={borderColorStyle(r.element)}>
-                {r.englishName}
-              </Button>
-            ))}
+            {filteredRaids.map((r) => raidButton(r))}
           </Box>
         )}
         {Array.from(raids).map(([category, raidArray]) => (
@@ -144,16 +151,7 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
               <Typography>{category}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {raidArray.map((r) => (
-                <Button
-                  key={r.id}
-                  variant="contained"
-                  sx={borderColorStyle(r.element)}
-                  onClick={() => handleClicked(r)}
-                >
-                  {r.englishName}
-                </Button>
-              ))}
+              {raidArray.map((r) => raidButton(r))}
             </AccordionDetails>
           </Accordion>
         ))}
