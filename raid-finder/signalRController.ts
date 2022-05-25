@@ -4,6 +4,7 @@ import {
   HubConnection,
   LogLevel,
   HttpTransportType,
+  HubConnectionState,
 } from "@microsoft/signalr";
 import { ReceiveRaidCode } from "./constants/signalRMethods";
 import { RaidsKey } from "./constants/localStorageKeys";
@@ -36,8 +37,9 @@ export class SignalRController {
       await this.connection.start();
       console.log("connected");
     } catch (err) {
-      console.log(err);
-      setTimeout(() => store.dispatch(startController()), 5000);
+      if (this.connection.state === HubConnectionState.Disconnected) {
+        setTimeout(() => store.dispatch(startController()), 5000);
+      }
     }
   }
 
