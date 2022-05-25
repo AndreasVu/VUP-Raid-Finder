@@ -593,5 +593,12 @@
     "category": "Ennead",
     "element": "Dark",
     "id": 85
+  },
+  {
+    "englishName": "Lvl 120 Atum",
+    "japaneseName": "Lv120 アトゥム",
+    "category": "Ennead",
+    "element": "Fire",
+    "id": 86
   }
 ]
