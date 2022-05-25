@@ -8,7 +8,7 @@ import {
 import { ReceiveRaidCode } from "./constants/signalRMethods";
 import { RaidsKey } from "./constants/localStorageKeys";
 import { store } from "./store/store";
-import { raidCodeAdded, start } from "./store/raidCodeSlice";
+import { raidCodeAdded, startController } from "./store/raidCodeSlice";
 
 export class SignalRController {
   private connection: HubConnection;
@@ -27,13 +27,17 @@ export class SignalRController {
     });
   }
 
+  state() {
+    return this.connection.state;
+  }
+
   async start() {
     try {
       await this.connection.start();
       console.log("connected");
     } catch (err) {
       console.log(err);
-      setTimeout(() => store.dispatch(start()), 5000);
+      setTimeout(() => store.dispatch(startController()), 5000);
     }
   }
 
