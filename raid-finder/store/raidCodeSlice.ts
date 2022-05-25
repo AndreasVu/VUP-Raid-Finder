@@ -24,9 +24,7 @@ const signalRSlice = createSlice({
   initialState,
   reducers: {
     subscribe(state, action: PayloadAction<Raid>) {
-      if (state.controller.state() != "Connected") {
-        state.controller.start();
-      }
+      console.log("subscribing");
       state.controller.subscribeToRaid(action.payload.id);
       state.subscribedRaids.push(action.payload);
       updateLocalStore(action.payload, "add");
@@ -71,6 +69,7 @@ const signalRSlice = createSlice({
     populateSelectedRaids(state) {
       state.subscribedRaids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
       for (const raid of state.subscribedRaids) {
+        console.log("subscribing to raid", raid.englishName);
         state.controller.subscribeToRaid(raid.id);
       }
     },
@@ -92,6 +91,7 @@ export const startController = createAsyncThunk<
 >("signalR/start", async (_, thunkApi) => {
   const state = thunkApi.getState();
   await state.signalR.controller.start();
+  console.log("exiting thunk");
 });
 
 const updateLocalStore = (raid: Raid, action: "add" | "remove") => {
