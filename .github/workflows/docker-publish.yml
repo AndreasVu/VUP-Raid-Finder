@@ -70,6 +70,14 @@ jobs:
           file: Backend/Dockerfile
 
   deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+        
     steps:
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
