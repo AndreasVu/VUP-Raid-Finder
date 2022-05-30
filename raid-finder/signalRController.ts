@@ -57,15 +57,9 @@ export class SignalRController {
 }
 
 export const getRaids = async (): Promise<Raid[]> => {
-  let localStorageValue = localStorage.getItem(RaidsKey);
-  if (localStorageValue) {
-    return JSON.parse(localStorageValue);
-  }
-
   let controller = new SignalRController();
   await controller.start();
   let result = await controller.getAvailableRaids();
-  localStorage.setItem("raids", JSON.stringify(result));
   await controller.stop();
   return result;
 };
