@@ -24,7 +24,6 @@ const signalRSlice = createSlice({
   initialState,
   reducers: {
     subscribe(state, action: PayloadAction<Raid>) {
-      console.log("subscribing");
       state.controller.subscribeToRaid(action.payload.id);
       state.subscribedRaids.push(action.payload);
       updateLocalStore(action.payload, "add");
