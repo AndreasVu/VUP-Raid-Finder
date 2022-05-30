@@ -3,6 +3,7 @@ import { Raid, RaidCode, RaidCodeFromApi } from "../models/raid-model";
 import { getRaids, SignalRController } from "../signalRController";
 import { v4 as uuidv4 } from "uuid";
 import { SelectedRaidsKey } from "../constants/localStorageKeys";
+import { RootState } from "./store";
 
 export interface SignalRState {
   controller: SignalRController;
@@ -22,9 +23,6 @@ const signalRSlice = createSlice({
   name: "signalR",
   initialState,
   reducers: {
-    start(state) {
-      state.controller.start();
-    },
     subscribe(state, action: PayloadAction<Raid>) {
       state.controller.subscribeToRaid(action.payload.id);
       state.subscribedRaids.push(action.payload);
@@ -84,6 +82,16 @@ export const fetchRaids = createAsyncThunk(
   }
 );
 
+export const startController = createAsyncThunk<
+  void,
+  void,
+  { state: RootState }
+>("signalR/start", async (_, thunkApi) => {
+  const state = thunkApi.getState();
+  await state.signalR.controller.start();
+  thunkApi.dispatch(populateSelectedRaids());
+});
+
 const updateLocalStore = (raid: Raid, action: "add" | "remove") => {
   let raids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
 
@@ -105,7 +113,6 @@ const getLocalstorage = <T>(key: string) => {
 };
 
 export const {
-  start,
   subscribe,
   unsubscribe,
   setAvailableraids,

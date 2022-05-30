@@ -13,7 +13,7 @@ import RaidList from "../components/raid-list";
 import { SnackbarProvider } from "notistack";
 import TopBar from "../components/top-bar";
 import { useDispatch, useSelector } from "react-redux";
-import { populateSelectedRaids, subscribe } from "../store/raidCodeSlice";
+import { subscribe } from "../store/raidCodeSlice";
 import { RootState } from "../store/store";
 
 export const ColorModeContext = React.createContext({
@@ -39,9 +39,6 @@ const Home: NextPage = () => {
     []
   );
   const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
-  useEffect(() => {
-    dispatch(populateSelectedRaids());
-  }, []);
 
   const selectedRaids = useSelector(
     (state: RootState) => state.signalR.subscribedRaids
