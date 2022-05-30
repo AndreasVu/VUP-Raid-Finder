@@ -69,7 +69,6 @@ const signalRSlice = createSlice({
     populateSelectedRaids(state) {
       state.subscribedRaids = getLocalstorage<Raid[]>(SelectedRaidsKey) ?? [];
       for (const raid of state.subscribedRaids) {
-        console.log("subscribing to raid", raid.englishName);
         state.controller.subscribeToRaid(raid.id);
       }
     },
