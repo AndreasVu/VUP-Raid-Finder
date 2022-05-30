@@ -91,7 +91,7 @@ export const startController = createAsyncThunk<
 >("signalR/start", async (_, thunkApi) => {
   const state = thunkApi.getState();
   await state.signalR.controller.start();
-  console.log("exiting thunk");
+  thunkApi.dispatch(populateSelectedRaids());
 });
 
 const updateLocalStore = (raid: Raid, action: "add" | "remove") => {
