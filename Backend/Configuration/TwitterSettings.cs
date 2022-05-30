@@ -1,7 +1,7 @@
 namespace Vu.RaidFinder.Backend.Configuration;
 
 public class TwitterSettings {
-    public static string FieldName = "Twitter";
+    public static string Position = "Twitter";
 
     public string ConsumerKey { get; set; }
 
