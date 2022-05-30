@@ -28,10 +28,6 @@ export class SignalRController {
     });
   }
 
-  state() {
-    return this.connection.state;
-  }
-
   async start() {
     try {
       await this.connection.start();
