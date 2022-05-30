@@ -21,13 +21,7 @@ builder.Services.AddLogging();
 
 builder.Services.AddRaidServerServices(builder.Configuration);
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-    });
-});
+builder.Services.AddCorsSettings(builder.Configuration);
 
 var app = builder.Build();
 
@@ -41,6 +35,9 @@ app.UseRouting();
 //app.UseSwaggerUi3();
 
 //app.MapControllers();
+
+app.UseWebSockets(Utils.GetWebSocketOptions(builder.Configuration));
+
 app.MapHub<RaidCodeHub>("/raid-code-hub");
 
 app.Run();

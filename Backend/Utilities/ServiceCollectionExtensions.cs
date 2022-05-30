@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<RaidCodeProvider>();
 
-        var twitterSettings = config.GetSection(TwitterSettings.FieldName).Get<TwitterSettings>();
+        var twitterSettings = config.GetSection(TwitterSettings.Position).Get<TwitterSettings>();
         if (!twitterSettings.HasValues())
             throw new ArgumentNullException(nameof(twitterSettings));
 
@@ -29,5 +29,26 @@ public static class ServiceCollectionExtensions
                !string.IsNullOrWhiteSpace(settings.ConsumerSecret) &&
                !string.IsNullOrWhiteSpace(settings.AccessToken) &&
                !string.IsNullOrWhiteSpace(settings.AccessTokenSecret);
+    }
+
+    public static IServiceCollection AddCorsSettings(this IServiceCollection services, IConfiguration config)
+    {
+        var corsSettings = config.GetSection(CorsSettings.Position).Get<CorsSettings>();
+        if (corsSettings.AllowedOrigins is null)
+            throw new ArgumentException(nameof(CorsSettings));
+        var origins = corsSettings.AllowedOrigins.Split(';');
+
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy
+                .WithOrigins(origins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+        });
+
+        return services;
     }
 }
