@@ -10,21 +10,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useSnackbar } from "notistack";
-import React, {
-  ChangeEventHandler,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Raid } from "../models/raid-model";
-import { getRaids } from "../signalRController";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { Box } from "@mui/system";
 import debounce from "lodash.debounce";
-import { CSSTransition } from "react-transition-group";
 
 interface SimpleDialogProps {
   open: boolean;
@@ -38,7 +30,6 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
   );
   const [searchValue, setSearchValue] = useState("");
   const [filteredRaids, setFilteredRaids] = useState<Raid[]>([]);
-  const [showSearch, setShowSearch] = useState(false);
 
   const getBorderColor = (element: string) => {
     switch (element) {
