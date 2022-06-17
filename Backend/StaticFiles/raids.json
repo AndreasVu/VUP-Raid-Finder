@@ -600,5 +600,12 @@
     "category": "Ennead",
     "element": "Fire",
     "id": 86
+  },
+  {
+    "englishName": "Lvl 275 Diaspora",
+    "japaneseName": "Lv275 ディアスポラ",
+    "category": "Impossible",
+    "element": "None",
+    "id": 85
   }
 ]
