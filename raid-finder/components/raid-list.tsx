@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { Raid, RaidCode } from "../models/raid-model";
 import RaidListEntry from "./raid-list-entry";
-import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { setIsUsed, unsubscribe } from "../store/raidCodeSlice";
@@ -20,18 +19,13 @@ export interface RaidListProps extends PaperProps {
 }
 
 const RaidList = ({ raid, sx, ...props }: RaidListProps) => {
-  const { enqueueSnackbar } = useSnackbar();
   const raidCodes = useSelector(
     (state: RootState) => state.signalR.raids[raid.id]
   );
   const dispatch = useDispatch();
 
-  const copyAndShowSnackbar = (raidCode: string) => {
+  const copyToClipboard = (raidCode: string) => {
     navigator.clipboard.writeText(raidCode);
-    enqueueSnackbar(`Copied "${raidCode}" to clipboard`, {
-      variant: "default",
-      autoHideDuration: 1000,
-    });
   };
 
   const copyLatest = () => {
@@ -40,12 +34,12 @@ const RaidList = ({ raid, sx, ...props }: RaidListProps) => {
     if (latest === undefined) return;
 
     dispatch(setIsUsed({ codeId: latest.id, raidId: raid.id }));
-    copyAndShowSnackbar(latest.code);
+    copyToClipboard(latest.code);
   };
 
   const handleClick = (raidCode: RaidCode) => {
     dispatch(setIsUsed({ codeId: raidCode.id, raidId: raid.id }));
-    copyAndShowSnackbar(raidCode.code);
+    copyToClipboard(raidCode.code);
   };
 
   const onRemoved = () => {
