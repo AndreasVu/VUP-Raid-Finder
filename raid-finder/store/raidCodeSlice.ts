@@ -12,6 +12,8 @@ export interface SignalRState {
   availableRaids: Raid[];
 }
 
+const RaidListLimit = 20;
+
 const initialState = {
   controller: new SignalRController(),
   raids: {},
@@ -62,6 +64,10 @@ const signalRSlice = createSlice({
         isUsed: false,
         tweetedAt: new Date(action.payload.tweetTime),
       });
+
+      if (list.length > RaidListLimit) {
+        list.pop();
+      }
 
       state.raids[action.payload.raidId] = list;
     },
