@@ -607,5 +607,19 @@
     "category": "Impossible",
     "element": "None",
     "id": 87
+  },
+  {
+    "englishName": "Lvl 120 Tefnut",
+    "japaneseName": "Lv120 テフヌト",
+    "category": "Ennead",
+    "element": "Water",
+    "id": 88
+  },
+  {
+    "englishName": "Lvl 120 Ra",
+    "japaneseName": "Lv120 ラー",
+    "category": "Ennead",
+    "element": "Fire",
+    "id": 89
   }
 ]
