@@ -7,7 +7,7 @@ import {
   Box,
 } from "@mui/material";
 import type { NextPage } from "next";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Raid } from "../models/raid-model";
 import RaidList from "../components/raid-list";
 import { SnackbarProvider } from "notistack";
@@ -15,6 +15,7 @@ import TopBar from "../components/top-bar";
 import { useDispatch, useSelector } from "react-redux";
 import { subscribe } from "../store/raidCodeSlice";
 import { RootState } from "../store/store";
+import { loadPalette, setPalette } from "../localStorage/colorPalette";
 
 export const ColorModeContext = React.createContext({
   toggleColorMode: () => {},
@@ -22,7 +23,10 @@ export const ColorModeContext = React.createContext({
 
 const Home: NextPage = () => {
   const dispatch = useDispatch();
-  const [mode, setMode] = useState<PaletteMode>("dark");
+  const [mode, setMode] = useState<PaletteMode>("light");
+  useEffect(() => {
+    setMode(loadPalette() || "light");
+  }, [])
 
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
@@ -33,7 +37,11 @@ const Home: NextPage = () => {
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prev) => (prev === "light" ? "dark" : "light"));
+        setMode((prev) => {
+          var newColor = prev === "light" ? "dark" : "light" as PaletteMode;
+          setPalette(newColor);
+          return newColor;
+        });
       },
     }),
     []
@@ -49,7 +57,7 @@ const Home: NextPage = () => {
       dispatch(subscribe(raid));
     }
   };
-
+  
   return (
     <SnackbarProvider
       maxSnack={3}
