@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Raid } from "../models/raid-model";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector } from "react-redux";
@@ -79,24 +79,25 @@ const RaidSelectDialog = ({ onClose, open }: SimpleDialogProps) => {
     onClose(null);
   };
 
-  const debouncedFilter = useCallback(
-    debounce((value: string) => {
-      if (value == "") {
-        setFilteredRaids([]);
-      } else {
-        setFilteredRaids(
-          allRaids.filter(
-            (r) =>
-              r.englishName
-                .toLocaleLowerCase()
-                .includes(value.toLocaleLowerCase()) ||
-              r.japaneseName
-                .toLocaleLowerCase()
-                .includes(value.toLocaleLowerCase())
-          )
-        );
-      }
-    }, 200),
+  const debouncedFilter = useMemo(
+    () =>
+      debounce((value: string) => {
+        if (value == "") {
+          setFilteredRaids([]);
+        } else {
+          setFilteredRaids(
+            allRaids.filter(
+              (r) =>
+                r.englishName
+                  .toLocaleLowerCase()
+                  .includes(value.toLocaleLowerCase()) ||
+                r.japaneseName
+                  .toLocaleLowerCase()
+                  .includes(value.toLocaleLowerCase())
+            )
+          );
+        }
+      }, 200),
     []
   );
   const handleValueChanged = (
